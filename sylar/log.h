@@ -4,6 +4,7 @@
 #include<string>
 #include<stdint.h>
 #include<memory>
+#include<list>
 
 namespace sylar{
 class LogEvent{
@@ -57,7 +58,7 @@ public:
 private:
     std::string m_name;
     LogLevel::Level m_level;
-    LogAppender::ptr append;
+    std::list<LogAppender::ptr> m_appenders; 
 };
 
 class StdoutLogAppender:public LogAppender{
