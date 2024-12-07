@@ -1,0 +1,4 @@
+/home/senct/Desktop/sylar_student/CMakeFiles/rebuild_cache.dir
+/home/senct/Desktop/sylar_student/CMakeFiles/edit_cache.dir
+/home/senct/Desktop/sylar_student/CMakeFiles/test.dir
+/home/senct/Desktop/sylar_student/CMakeFiles/sylar.dir

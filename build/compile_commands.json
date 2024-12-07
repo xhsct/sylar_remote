@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/senct/Desktop/sylar_student/build",
+  "command": "/usr/bin/g++   -I/home/senct/Desktop/sylar_student/sylar   -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g   -o CMakeFiles/test.dir/tests/test.cc.o -c /home/senct/Desktop/sylar_student/tests/test.cc",
+  "file": "/home/senct/Desktop/sylar_student/tests/test.cc"
+},
+{
+  "directory": "/home/senct/Desktop/sylar_student/build",
+  "command": "/usr/bin/g++  -Dsylar_EXPORTS -I/home/senct/Desktop/sylar_student/sylar   -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g -fPIC   -o CMakeFiles/sylar.dir/sylar/log.cc.o -c /home/senct/Desktop/sylar_student/sylar/log.cc",
+  "file": "/home/senct/Desktop/sylar_student/sylar/log.cc"
+},
+{
+  "directory": "/home/senct/Desktop/sylar_student/build",
+  "command": "/usr/bin/g++  -Dsylar_EXPORTS -I/home/senct/Desktop/sylar_student/sylar   -rdynamic -O3 -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function -g -fPIC   -o CMakeFiles/sylar.dir/sylar/util.cc.o -c /home/senct/Desktop/sylar_student/sylar/util.cc",
+  "file": "/home/senct/Desktop/sylar_student/sylar/util.cc"
+}
+]
