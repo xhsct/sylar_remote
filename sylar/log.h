@@ -12,6 +12,9 @@
 #include<map>
 #include<functional>
 #include<time.h>
+#include<cstdarg>
+#include<map>
+#include"singleton.h"
 
 #define SYLAR_LOG_LEVEL(logger,level)\
     if(logger->getLevel()<=level)\
@@ -23,6 +26,17 @@
 #define SYLAR_LOG_INFO(logger) SYLAR_LOG_LEVEL(logger,sylar::LogLevel::INFO)
 #define SYLAR_LOG_WARN(logger) SYLAR_LOG_LEVEL(logger,sylar::LogLevel::WARN)
 
+#define SYLAR_LOG_FMT_LEVEL(logger, level, fmt, ...) \
+    if(logger->getLevel() <= level) \
+        sylar::LogEventWrap(sylar::LogEvent::ptr(new sylar::LogEvent(logger, level, \
+                        __FILE__, __LINE__, 0, sylar::GetThreadId(),\
+                sylar::GetFiberId(), time(0), sylar::Thread::GetName()))).getEvent()->format(fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_DEBUG(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::DEBUG, fmt, __VA_ARGS__)
+#define SYLAR_LOG_FMT_INFO(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::INFO, fmt, __VA_ARGS__)
+#define SYLAR_LOG_FMT_WARN(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::WARN, fmt, __VA_ARGS__)
+#define SYLAR_LOG_FMT_ERROR(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::ERROR, fmt, __VA_ARGS__)
+#define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::FATAL, fmt, __VA_ARGS__)
 
 namespace sylar{
 class Logger;
@@ -54,6 +68,8 @@ public:
     std::stringstream& getSS(){return m_ss;}
     std::shared_ptr<Logger> getLogger(){return m_logger;}
     LogLevel::Level getLevel(){return m_level;}
+    void format(const char* fmt,...);
+    void format(const char* fmt,va_list al);
 private:
     std::shared_ptr<Logger> m_logger;
     LogLevel::Level m_level;
@@ -96,12 +112,15 @@ private:
 };
 
 class LogAppender{
+friend class Logger;
 public:
     typedef std::shared_ptr<LogAppender> ptr;
     virtual ~LogAppender(){}
     virtual void log(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event)=0;
     void setFormatter(LogFormatter::ptr val){m_formatter=val;}
     LogFormatter::ptr getFormatter() const{return m_formatter;}
+    LogLevel::Level getLevel() const{return m_level;}
+    void setLevel(LogLevel::Level val){m_level = val;}
 protected:
     LogLevel::Level m_level = LogLevel::DEBUG;
     LogFormatter::ptr m_formatter;
@@ -148,6 +167,18 @@ private:
     std::string m_name;
     std::ofstream m_filestream;
 };
+
+class LoggerManager{
+public:
+    LoggerManager();
+    Logger::ptr getLogger(const std::string name);
+    void init();
+private:
+    std::map<std::string,Logger::ptr> m_logger;
+    Logger::ptr m_root;
+};
+
+typedef sylar::Singleton<LoggerManager> LoggerMgr;
 
 }
 

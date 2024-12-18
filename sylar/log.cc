@@ -16,10 +16,25 @@ namespace sylar{
         m_event->getLogger()->log(m_event->getLevel(),m_event);
     }
     std::stringstream& LogEventWrap::getSS(){return m_event->getSS();}
-    LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,const char* file,int32_t line,uint32_t elapse,uint32_t thread_id,uint32_t fiber_id,uint64_t time):
+    LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,const char* file,int32_t line,uint32_t elapse,
+    uint32_t thread_id,uint32_t fiber_id,uint64_t time):
     m_logger(logger),m_level(level),m_file(file),m_line(line),
     m_elapse(elapse),m_threadId(thread_id),
     m_fiberId(fiber_id),m_time(time){}
+    void LogEvent::format(const char* fmt,...){
+        va_list al;
+        va_start(al,fmt);
+        format(fmt,al);
+        va_end(al);
+    }
+    void LogEvent::format(const char* fmt,va_list al){
+        char* buf = nullptr;
+        int len = vasprintf(&buf,fmt,al);
+        if(len!=-1){
+            m_ss<<std::string(buf,len);
+            free(buf);
+        }
+    }
     void Logger::debug(LogEvent::ptr event){
         log(LogLevel::DEBUG,event);
     }
@@ -289,9 +304,9 @@ namespace sylar{
                     m_items.push_back(it->second(std::get<1>(i)));
                 }
             }
-            std::cout<<"("<<std::get<0>(i)<<") - ("<<std::get<2>(i)<<")"<<std::endl;
+            // std::cout<<"("<<std::get<0>(i)<<") - ("<<std::get<2>(i)<<")"<<std::endl;
         }
-        std::cout<<m_items.size()<<std::endl;
+        // std::cout<<m_items.size()<<std::endl;
     }
     std::string LogFormatter::format(std::shared_ptr<Logger> logger,LogLevel::Level level,LogEvent::ptr event){
         std::stringstream ss;
@@ -318,6 +333,14 @@ namespace sylar{
             return "UNKNOW";
         }
         return "UNKNOW";
+    }
+    LoggerManager::LoggerManager(){
+        m_root.reset(new Logger);
+        m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
+    }
+    Logger::ptr LoggerManager::getLogger(const std::string name){
+        auto it = m_logger.find(name);
+        return it==m_logger.end()?m_root:it->second;
     }
     
 }
